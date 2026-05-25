@@ -1,19 +1,20 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: "http://localhost:8080",
 });
 
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
-      const token =
-        localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
-      if (token) {
+      // IMPORTANT FIX
+      if (
+        token &&
+        token !== "undefined" &&
+        token !== "null"
+      ) {
         config.headers.Authorization =
           `Bearer ${token}`;
       }
