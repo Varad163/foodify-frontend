@@ -1,28 +1,49 @@
-type FoodCardProps = {
+"use client";
+
+import { addToCart } from "@/services/cart.service";
+
+interface Props {
   food: any;
-};
+}
 
 export default function FoodCard({
   food,
-}: FoodCardProps) {
+}: Props) {
+
+  const handleAddToCart = async () => {
+
+    try {
+
+      await addToCart(food.id);
+
+      alert("Added to cart");
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert("Failed to add cart");
+    }
+  };
 
   return (
 
     <div
       className="
-        border
-        rounded-2xl
         overflow-hidden
-        shadow-sm
-        hover:shadow-lg
-        transition
+        rounded-2xl
+        border
         bg-white
+        shadow-sm
+        transition
+        hover:shadow-lg
       "
     >
 
       <div
         className="
-          h-52
+          h-48
+          w-full
           bg-gray-100
           flex
           items-center
@@ -30,70 +51,77 @@ export default function FoodCard({
           text-gray-400
         "
       >
-        No Image
+        Food Image
       </div>
 
-      <div className="p-4">
+      <div className="p-5 space-y-4">
 
-        <div className="
-          flex
-          items-start
-          justify-between
-        ">
+        <div>
 
-          <div>
-
-            <h2 className="
-              text-lg
+          <h2
+            className="
+              text-xl
               font-bold
-            ">
-              {food.name}
-            </h2>
+            "
+          >
+            {food.name}
+          </h2>
 
-            <p className="
+          <p
+            className="
               text-sm
               text-gray-500
               mt-1
-            ">
-              {food.description}
-            </p>
-
-          </div>
-
-        </div>
-
-        <div className="
-          mt-4
-          flex
-          items-center
-          justify-between
-        ">
-
-          <span className="
-            text-lg
-            font-bold
-          ">
-            ₹{food.price}
-          </span>
-
-          <button
-            className="
-              bg-black
-              text-white
-              px-4
-              py-2
-              rounded-lg
-              hover:bg-gray-800
-              transition
             "
           >
-            Add
-          </button>
+            {food.description}
+          </p>
 
         </div>
 
-      </div>
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+          "
+        >
 
+          <span
+            className="
+              text-lg
+              font-semibold
+            "
+          >
+            ₹ {food.price}
+          </span>
+
+          <span
+            className="
+              text-sm
+            "
+          >
+            {food.veg ? "🟢 Veg" : "🔴 Non Veg"}
+          </span>
+
+        </div>
+
+        <button
+          onClick={handleAddToCart}
+          className="
+            w-full
+            rounded-xl
+            bg-black
+            py-3
+            text-white
+            transition
+            hover:opacity-90
+          "
+        >
+          Add To Cart
+        </button>
+
+      </div>
     </div>
   );
 }

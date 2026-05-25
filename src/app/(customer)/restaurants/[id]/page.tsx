@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState }
+from "react";
 
-import { useParams } from "next/navigation";
+import { useParams }
+from "next/navigation";
 
-import FoodCard from "@/components/food/food-card";
+import FoodCard
+from "@/components/food/food-card";
 
 import {
   getFoodsByRestaurant,
@@ -14,7 +17,8 @@ export default function RestaurantFoodsPage() {
 
   const params = useParams();
 
-  const [foods, setFoods] = useState([]);
+  const [foods, setFoods] =
+    useState<any[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -30,7 +34,10 @@ export default function RestaurantFoodsPage() {
             params.id as string
           );
 
-        setFoods(data);
+        console.log(data);
+
+        // IMPORTANT FIX
+        setFoods(data.data.content);
 
       } catch (error) {
 
@@ -62,39 +69,59 @@ export default function RestaurantFoodsPage() {
 
       <div className="mb-8">
 
-        <h1 className="
-          text-4xl
-          font-bold
-        ">
+        <h1
+          className="
+            text-4xl
+            font-bold
+          "
+        >
           Restaurant Foods
         </h1>
 
-        <p className="
-          text-gray-500
-          mt-2
-        ">
+        <p
+          className="
+            mt-2
+            text-gray-500
+          "
+        >
           Discover delicious meals
         </p>
 
       </div>
 
-      <div className="
-        grid
-        grid-cols-1
-        md:grid-cols-2
-        lg:grid-cols-3
-        gap-6
-      ">
+      {foods.length === 0 ? (
 
-        {foods.map((food: any) => (
+        <div
+          className="
+            text-gray-500
+            text-lg
+          "
+        >
+          No foods available
+        </div>
 
-          <FoodCard
-            key={food.id}
-            food={food}
-          />
-        ))}
+      ) : (
 
-      </div>
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-6
+            md:grid-cols-2
+            lg:grid-cols-3
+          "
+        >
+
+          {foods.map((food) => (
+
+            <FoodCard
+              key={food.id}
+              food={food}
+            />
+          ))}
+
+        </div>
+      )}
 
     </main>
   );
