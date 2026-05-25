@@ -9,7 +9,7 @@ export const loginUser = async (
   data: LoginRequest
 ) => {
   const response = await api.post(
-    "/auth/login",
+    "/api/auth/login",
     data
   );
 
@@ -20,7 +20,7 @@ export const signupUser = async (
   data: SignupRequest
 ) => {
   const response = await api.post(
-    "/auth/signup",
+    "/api/auth/signup",
     data
   );
 
