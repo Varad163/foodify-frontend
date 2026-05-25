@@ -39,6 +39,7 @@ type LoginFormValues = z.infer<
 >;
 
 export default function LoginForm() {
+
   const router = useRouter();
 
   const { setAuth } =
@@ -57,38 +58,57 @@ export default function LoginForm() {
   const onSubmit = async (
     values: LoginFormValues
   ) => {
+
     try {
+
       const response =
         await loginUser(values);
 
-      setAuth(
-        response.token,
-        response.role
+      console.log(response);
+
+      // IMPORTANT FIX
+      const token =
+        response.data.token;
+
+      const role =
+        response.data.role;
+
+      // Save in Zustand
+      setAuth(token, role);
+
+      // Save in localStorage
+      localStorage.setItem(
+        "token",
+        token
       );
 
       toast.success(
         "Login successful"
       );
 
-      if (
-        response.role === "ADMIN"
-      ) {
+      if (role === "ADMIN") {
+
         router.push(
           ROUTES.ADMIN_DASHBOARD
         );
+
       } else if (
-        response.role ===
-        "RESTAURANT_OWNER"
+        role === "RESTAURANT_OWNER"
       ) {
+
         router.push(
           ROUTES.RESTAURANT_DASHBOARD
         );
+
       } else {
+
         router.push(
           ROUTES.CUSTOMER_DASHBOARD
         );
       }
+
     } catch (error: any) {
+
       toast.error(
         error?.response?.data
           ?.message ||
@@ -98,6 +118,7 @@ export default function LoginForm() {
   };
 
   return (
+
     <div
       className="
         w-full
@@ -110,40 +131,58 @@ export default function LoginForm() {
         shadow-lg
       "
     >
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">
+
+      <div className="
+        space-y-2
+        text-center
+      ">
+
+        <h1 className="
+          text-3xl
+          font-bold
+        ">
           Welcome Back
         </h1>
 
-        <p className="text-muted-foreground">
+        <p className="
+          text-muted-foreground
+        ">
           Login to your account
         </p>
+
       </div>
 
       <Form {...form}>
+
         <form
           onSubmit={form.handleSubmit(
             onSubmit
           )}
           className="space-y-5"
         >
+
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
+
               <FormItem>
+
                 <FormLabel>
                   Email
                 </FormLabel>
 
                 <FormControl>
+
                   <Input
                     placeholder="Enter email"
                     {...field}
                   />
+
                 </FormControl>
 
                 <FormMessage />
+
               </FormItem>
             )}
           />
@@ -152,20 +191,25 @@ export default function LoginForm() {
             control={form.control}
             name="password"
             render={({ field }) => (
+
               <FormItem>
+
                 <FormLabel>
                   Password
                 </FormLabel>
 
                 <FormControl>
+
                   <Input
                     type="password"
                     placeholder="Enter password"
                     {...field}
                   />
+
                 </FormControl>
 
                 <FormMessage />
+
               </FormItem>
             )}
           />
@@ -176,8 +220,11 @@ export default function LoginForm() {
           >
             Login
           </Button>
+
         </form>
+
       </Form>
+
     </div>
   );
 }

@@ -2,14 +2,24 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  getMyCart,
-} from "@/services/cart.service";
+import { getMyCart } from "@/services/cart.service";
+
+interface CartItem {
+  foodId: number;
+
+  foodName: string;
+
+  price: number;
+
+  quantity: number;
+
+  restaurantName: string;
+}
 
 export default function CartPage() {
 
   const [cartItems, setCartItems] =
-    useState<any[]>([]);
+    useState<CartItem[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -25,7 +35,8 @@ export default function CartPage() {
 
         console.log(data);
 
-        setCartItems(data.data);
+        // FIX
+        setCartItems(data || []);
 
       } catch (error) {
 
@@ -45,7 +56,7 @@ export default function CartPage() {
     cartItems.reduce(
       (total, item) =>
         total +
-        item.food.price * item.quantity,
+        item.price * item.quantity,
       0
     );
 
@@ -98,21 +109,22 @@ export default function CartPage() {
 
         <div
           className="
-            space-y-5
+            space-y-4
           "
         >
 
-          {cartItems.map((item) => (
+          {cartItems.map((item, index) => (
 
             <div
-              key={item.id}
+              key={index}
               className="
                 flex
                 items-center
                 justify-between
-                rounded-2xl
+                rounded-xl
                 border
                 p-5
+                shadow-sm
               "
             >
 
@@ -124,29 +136,50 @@ export default function CartPage() {
                     font-semibold
                   "
                 >
-                  {item.food.name}
+                  {item.foodName}
                 </h2>
 
                 <p
                   className="
+                    mt-1
                     text-sm
                     text-gray-500
-                    mt-1
                   "
                 >
-                  {item.food.description}
+                  Restaurant:
+                  {" "}
+                  {item.restaurantName}
                 </p>
 
-                <p
+                <div
                   className="
-                    mt-2
-                    text-sm
+                    mt-3
+                    flex
+                    items-center
+                    gap-4
                   "
                 >
-                  Quantity:
-                  {" "}
-                  {item.quantity}
-                </p>
+
+                  <span
+                    className="
+                      font-medium
+                    "
+                  >
+                    ₹{item.price}
+                  </span>
+
+                  <span
+                    className="
+                      text-sm
+                      text-gray-500
+                    "
+                  >
+                    Qty:
+                    {" "}
+                    {item.quantity}
+                  </span>
+
+                </div>
 
               </div>
 
@@ -156,29 +189,35 @@ export default function CartPage() {
                 "
               >
 
-                <p
+                <div
                   className="
                     text-lg
                     font-bold
                   "
                 >
                   ₹
-                  {" "}
-                  {item.food.price * item.quantity}
-                </p>
+                  {
+                    item.price *
+                    item.quantity
+                  }
+                </div>
 
               </div>
 
             </div>
+
           ))}
 
           <div
             className="
+              mt-8
               flex
               items-center
               justify-between
-              border-t
-              pt-6
+              rounded-xl
+              bg-black
+              p-6
+              text-white
             "
           >
 
@@ -191,32 +230,19 @@ export default function CartPage() {
               Total
             </h2>
 
-            <p
+            <div
               className="
-                text-2xl
+                text-3xl
                 font-bold
               "
             >
-              ₹ {totalPrice}
-            </p>
+              ₹{totalPrice}
+            </div>
 
           </div>
 
-          <button
-            className="
-              w-full
-              rounded-2xl
-              bg-black
-              py-4
-              text-white
-              text-lg
-              font-semibold
-            "
-          >
-            Proceed To Checkout
-          </button>
-
         </div>
+
       )}
 
     </main>
