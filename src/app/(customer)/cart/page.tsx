@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { placeOrder } from "@/services/order.service";
 
 import { getMyCart } from "@/services/cart.service";
 
@@ -62,12 +63,35 @@ export default function CartPage() {
 
   if (loading) {
 
+
     return (
       <div className="p-6">
         Loading cart...
       </div>
     );
   }
+    const handlePlaceOrder =
+  async () => {
+
+    try {
+
+      await placeOrder();
+
+      alert(
+        "Order placed successfully"
+      );
+
+      window.location.reload();
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        "Failed to place order"
+      );
+    }
+  };
 
   return (
 
@@ -237,6 +261,21 @@ export default function CartPage() {
               "
             >
               ₹{totalPrice}
+              <button
+  onClick={handlePlaceOrder}
+  className="
+    mt-6
+    w-full
+    rounded-xl
+    bg-green-600
+    p-4
+    text-lg
+    font-semibold
+    text-white
+  "
+>
+  Place Order
+</button>
             </div>
 
           </div>
