@@ -27,8 +27,6 @@ import { loginUser } from "@/services/auth.service";
 
 import { useAuthStore } from "@/store/auth.store";
 
-import { ROUTES } from "@/constants/routes";
-
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
@@ -66,48 +64,70 @@ export default function LoginForm() {
 
       console.log(response);
 
-      // IMPORTANT FIX
       const token =
         response.data.token;
 
       const role =
         response.data.role;
 
-      // Save in Zustand
+      // Save auth in Zustand
       setAuth(token, role);
 
-      // Save in localStorage
+      // Save token in localStorage
       localStorage.setItem(
         "token",
         token
+      );
+
+      localStorage.setItem(
+        "role",
+        role
       );
 
       toast.success(
         "Login successful"
       );
 
+      // =========================
+      // ROLE BASED REDIRECT
+      // =========================
+
+      // ADMIN
       if (role === "ADMIN") {
 
         router.push(
-          ROUTES.ADMIN_DASHBOARD
+          "/admin-dashboard"
         );
 
+      // RESTAURANT OWNER
       } else if (
-        role === "RESTAURANT_OWNER"
+        role ===
+        "RESTAURANT_OWNER"
       ) {
 
         router.push(
-          ROUTES.RESTAURANT_DASHBOARD
+          "/restaurant-dashboard"
         );
 
-      } else {
+      // DELIVERY PARTNER
+      } else if (
+        role ===
+        "DELIVERY_PARTNER"
+      ) {
 
         router.push(
-          ROUTES.CUSTOMER_DASHBOARD
+          "/delivery-dashboard"
         );
+
+      // CUSTOMER
+      } else {
+
+        router.push("/");
       }
 
     } catch (error: any) {
+
+      console.log(error);
 
       toast.error(
         error?.response?.data
@@ -132,21 +152,27 @@ export default function LoginForm() {
       "
     >
 
-      <div className="
-        space-y-2
-        text-center
-      ">
+      <div
+        className="
+          space-y-2
+          text-center
+        "
+      >
 
-        <h1 className="
-          text-3xl
-          font-bold
-        ">
+        <h1
+          className="
+            text-3xl
+            font-bold
+          "
+        >
           Welcome Back
         </h1>
 
-        <p className="
-          text-muted-foreground
-        ">
+        <p
+          className="
+            text-muted-foreground
+          "
+        >
           Login to your account
         </p>
 

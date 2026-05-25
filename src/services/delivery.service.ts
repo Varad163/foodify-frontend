@@ -11,6 +11,17 @@ export const getAvailableOrders =
     return response.data;
 };
 
+export const getMyDeliveries =
+  async () => {
+
+    const response =
+      await axiosInstance.get(
+        "/delivery/my-deliveries"
+      );
+
+    return response.data;
+  };
+
 export const acceptDelivery =
   async (orderId: number) => {
 
