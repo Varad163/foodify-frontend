@@ -70,10 +70,13 @@ export default function LoginForm() {
       const role =
         response.data.role;
 
-      // Save auth in Zustand
+      // =========================
+      // SAVE AUTH
+      // =========================
+
       setAuth(token, role);
 
-      // Save token in localStorage
+      // localStorage
       localStorage.setItem(
         "token",
         token
@@ -83,6 +86,13 @@ export default function LoginForm() {
         "role",
         role
       );
+
+      // cookies for middleware
+      document.cookie =
+        `token=${token}; path=/`;
+
+      document.cookie =
+        `role=${role}; path=/`;
 
       toast.success(
         "Login successful"

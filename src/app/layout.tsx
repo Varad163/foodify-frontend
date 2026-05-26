@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-
+import Navbar
+from "@/components/layout/navbar";
 import {
   Geist,
   Geist_Mono,
@@ -47,6 +48,8 @@ export default function RootLayout({
           antialiased
         "
       >
+        <Navbar />
+
         {children}
 
         <Toaster

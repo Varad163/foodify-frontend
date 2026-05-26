@@ -1,10 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import { getMyOrders } from "@/services/my-order.service";
+import {
+  connectSocket,
+  disconnectSocket,
+} from "@/lib/socket";
 
-export default function MyOrdersPage() {
+import {
+  getMyOrders
+} from "@/services/my-order.service";
+
+import OrderStatusTimeline
+from "@/components/order/order-status-timeline";
+
+import {
+  useNotificationStore
+} from "@/store/notification.store";
+
+export default function
+MyOrdersPage() {
 
   const [orders, setOrders] =
     useState<any[]>([]);
@@ -12,11 +30,14 @@ export default function MyOrdersPage() {
   const [loading, setLoading] =
     useState(true);
 
-  useEffect(() => {
+  const {
+    addNotification
+  } =
+  useNotificationStore();
 
-    fetchOrders();
-
-  }, []);
+  // =========================
+  // FETCH ORDERS
+  // =========================
 
   const fetchOrders =
     async () => {
@@ -26,7 +47,14 @@ export default function MyOrdersPage() {
         const data =
           await getMyOrders();
 
-        setOrders(data);
+        console.log(
+          "Orders:",
+          data
+        );
+
+        setOrders(
+          data || []
+        );
 
       } catch (error) {
 
@@ -38,36 +66,110 @@ export default function MyOrdersPage() {
       }
     };
 
+  // =========================
+  // INITIAL FETCH
+  // =========================
+
+  useEffect(() => {
+
+    fetchOrders();
+
+  }, []);
+
+  // =========================
+  // SOCKET CONNECTION
+  // =========================
+
+  useEffect(() => {
+
+    connectSocket(
+      (message) => {
+
+        console.log(
+          "Realtime message:",
+          message
+        );
+
+        // notification
+        addNotification(
+          message
+        );
+
+        // refresh orders
+        fetchOrders();
+      }
+    );
+
+    return () => {
+
+      disconnectSocket();
+    };
+
+  }, []);
+
+  // =========================
+  // LOADING
+  // =========================
+
   if (loading) {
+
     return (
+
       <div className="p-8">
         Loading...
       </div>
     );
   }
 
+  // =========================
+  // UI
+  // =========================
+
   return (
+
     <div className="p-8">
 
-      <h1
-        className="
-          text-4xl
-          font-bold
-          mb-2
-        "
-      >
-        My Orders
-      </h1>
+      {/* HEADER */}
 
-      <p className="text-gray-500 mb-8">
-        Track your orders
-      </p>
+      <div className="mb-8">
+
+        <h1
+          className="
+            text-4xl
+            font-bold
+            mb-2
+          "
+        >
+          My Orders
+        </h1>
+
+        <p
+          className="
+            text-gray-500
+          "
+        >
+          Track your orders
+        </p>
+
+      </div>
+
+      {/* ORDERS */}
 
       <div className="space-y-6">
 
         {orders.length === 0 ? (
 
-          <p>No orders found</p>
+          <div
+            className="
+              rounded-2xl
+              border
+              p-8
+              text-center
+              text-gray-500
+            "
+          >
+            No orders found
+          </div>
 
         ) : (
 
@@ -76,8 +178,8 @@ export default function MyOrdersPage() {
             <div
               key={order.orderId}
               className="
-                border
                 rounded-2xl
+                border
                 p-6
                 shadow-sm
               "
@@ -86,10 +188,15 @@ export default function MyOrdersPage() {
               <div
                 className="
                   flex
-                  justify-between
-                  items-center
+                  flex-col
+                  gap-6
+                  md:flex-row
+                  md:items-center
+                  md:justify-between
                 "
               >
+
+                {/* LEFT */}
 
                 <div>
 
@@ -103,44 +210,85 @@ export default function MyOrdersPage() {
                     {order.orderId}
                   </h2>
 
-                  <p className="mt-2">
+                  <p className="mt-3">
                     Restaurant:
                     {" "}
-                    {order.restaurantName}
-                  </p>
-
-                  <p>
-                    Status:
-                    {" "}
-                    <span className="font-semibold">
-                      {order.status}
+                    <span
+                      className="
+                        font-medium
+                      "
+                    >
+                      {
+                        order.restaurantName
+                      }
                     </span>
                   </p>
 
-                  <p>
+                  <p className="mt-1">
                     Delivery Partner:
                     {" "}
-                    {order.deliveryPartnerName}
+                    <span
+                      className="
+                        font-medium
+                      "
+                    >
+                      {
+                        order.deliveryPartnerName
+                      }
+                    </span>
                   </p>
 
                 </div>
 
+                {/* RIGHT */}
+
                 <div
                   className="
-                    text-2xl
-                    font-bold
+                    text-right
                   "
                 >
-                  ₹ {order.totalAmount}
+
+                  <div
+                    className="
+                      text-3xl
+                      font-bold
+                    "
+                  >
+                    ₹
+                    {order.totalAmount}
+                  </div>
+
+                  <div
+                    className="
+                      mt-3
+                      inline-block
+                      rounded-full
+                      bg-black
+                      px-4
+                      py-2
+                      text-sm
+                      text-white
+                    "
+                  >
+                    {order.status}
+                  </div>
+
                 </div>
 
               </div>
+
+              {/* TIMELINE */}
+
+              <OrderStatusTimeline
+                status={order.status}
+              />
 
             </div>
           ))
         )}
 
       </div>
+
     </div>
   );
 }
