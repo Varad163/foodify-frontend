@@ -1,5 +1,8 @@
 "use client";
 
+import { useState }
+from "react";
+
 import {
   Bell
 } from "lucide-react";
@@ -10,6 +13,9 @@ import {
 
 export default function
 NotificationBell() {
+
+  const [open, setOpen] =
+    useState(false);
 
   const {
 
@@ -24,7 +30,12 @@ NotificationBell() {
 
     <div className="relative">
 
+      {/* BELL BUTTON */}
+
       <button
+        onClick={() =>
+          setOpen(!open)
+        }
         className="
           relative
         "
@@ -50,102 +61,115 @@ NotificationBell() {
               text-white
             "
           >
-            {notifications.length}
+            {
+              notifications.length
+            }
           </span>
         )}
 
       </button>
 
-      <div
-        className="
-          absolute
-          right-0
-          mt-4
-          w-80
-          rounded-2xl
-          border
-          bg-white
-          p-4
-          shadow-xl
-        "
-      >
+      {/* DROPDOWN */}
+
+      {open && (
 
         <div
           className="
-            mb-4
-            flex
-            items-center
-            justify-between
+            absolute
+            right-0
+            mt-4
+            w-80
+            rounded-2xl
+            border
+            bg-white
+            p-4
+            shadow-xl
+            z-50
           "
         >
 
-          <h2
+          <div
             className="
-              text-lg
-              font-bold
+              mb-4
+              flex
+              items-center
+              justify-between
             "
           >
-            Notifications
-          </h2>
 
-          <button
-            onClick={
-              clearNotifications
-            }
-            className="
-              text-sm
-              text-red-500
-            "
-          >
-            Clear
-          </button>
-
-        </div>
-
-        <div
-          className="
-            space-y-3
-          "
-        >
-
-          {notifications.length === 0 ? (
-
-            <p
+            <h2
               className="
-                text-sm
-                text-gray-500
+                text-lg
+                font-bold
               "
             >
-              No notifications
-            </p>
+              Notifications
+            </h2>
 
-          ) : (
+            <button
+  onClick={() => {
 
-            notifications.map(
-              (notification) => (
+    clearNotifications();
 
-                <div
-                  key={
-                    notification.id
-                  }
-                  className="
-                    rounded-xl
-                    border
-                    p-3
-                    text-sm
-                  "
-                >
-                  {
-                    notification.message
-                  }
-                </div>
+    setOpen(false);
+  }}
+              className="
+                text-sm
+                text-red-500
+              "
+            >
+              Clear
+            </button>
+
+          </div>
+
+          <div
+            className="
+              max-h-80
+              space-y-3
+              overflow-y-auto
+            "
+          >
+
+            {notifications.length === 0 ? (
+
+              <p
+                className="
+                  text-sm
+                  text-gray-500
+                "
+              >
+                No notifications
+              </p>
+
+            ) : (
+
+              notifications.map(
+                (notification) => (
+
+                  <div
+                    key={
+                      notification.id
+                    }
+                    className="
+                      rounded-xl
+                      border
+                      p-3
+                      text-sm
+                    "
+                  >
+                    {
+                      notification.message
+                    }
+                  </div>
+                )
               )
-            )
-          )}
+            )}
+
+          </div>
 
         </div>
-
-      </div>
+      )}
 
     </div>
   );

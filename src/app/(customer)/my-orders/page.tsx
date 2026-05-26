@@ -14,6 +14,10 @@ import {
   getMyOrders
 } from "@/services/my-order.service";
 
+import {
+  payOrder
+} from "@/services/payment.service";
+
 import OrderStatusTimeline
 from "@/components/order/order-status-timeline";
 
@@ -106,6 +110,36 @@ MyOrdersPage() {
     };
 
   }, []);
+
+  // =========================
+  // PAYMENT
+  // =========================
+
+  const handlePayment =
+    async (
+      orderId: number
+    ) => {
+
+      try {
+
+        await payOrder(
+          orderId,
+          "ONLINE"
+        );
+
+        alert(
+          "Payment Successful"
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+        alert(
+          "Payment Failed"
+        );
+      }
+    };
 
   // =========================
   // LOADING
@@ -272,6 +306,30 @@ MyOrdersPage() {
                   >
                     {order.status}
                   </div>
+
+                  {/* PAYMENT BUTTON */}
+
+                  <button
+
+                    onClick={() =>
+                      handlePayment(
+                        order.orderId
+                      )
+                    }
+
+                    className="
+                      mt-4
+                      rounded-xl
+                      bg-green-600
+                      px-4
+                      py-2
+                      text-white
+                    "
+                  >
+
+                    Pay Now
+
+                  </button>
 
                 </div>
 
