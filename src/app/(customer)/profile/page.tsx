@@ -1,59 +1,40 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
-import api from "@/lib/axios";
+export default function ProfilePage() {
 
-export default function
-ProfilePage() {
-
-  const [user, setUser] =
-    useState<any>(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const fetchProfile =
-    async () => {
-
-      try {
-
-        const response =
-          await api.get(
-            "/user/profile"
-          );
-
-        setUser(
-          response.data.data
-        );
-
-      } catch (error) {
-
-        console.log(error);
-
-      } finally {
-
-        setLoading(false);
-      }
-    };
+  const [profile, setProfile] =
+    useState({
+      name: "",
+      email: "",
+      role: "",
+    });
 
   useEffect(() => {
 
-    fetchProfile();
+    const email =
+      localStorage.getItem(
+        "email"
+      ) || "";
+
+    const role =
+      localStorage.getItem(
+        "role"
+      ) || "";
+
+    const name =
+      localStorage.getItem(
+        "name"
+      ) || "User";
+
+    setProfile({
+      name,
+      email,
+      role,
+    });
 
   }, []);
-
-  if (loading) {
-
-    return (
-      <div className="p-8">
-        Loading...
-      </div>
-    );
-  }
 
   return (
 
@@ -63,60 +44,96 @@ ProfilePage() {
         className="
           text-4xl
           font-bold
-          mb-8
+          mb-2
         "
       >
         My Profile
       </h1>
 
+      <p className="text-gray-500 mb-8">
+        Manage your account
+      </p>
+
       <div
         className="
-          border
-          rounded-2xl
-          p-8
           max-w-2xl
+          rounded-2xl
+          border
+          p-8
+          shadow-sm
+          space-y-6
         "
       >
 
-        <div className="space-y-6">
+        <div>
 
-          <div>
+          <p className="text-gray-500">
+            Name
+          </p>
 
-            <p className="text-gray-500">
-              Name
-            </p>
-
-            <h2 className="text-2xl font-semibold">
-              {user?.name}
-            </h2>
-
-          </div>
-
-          <div>
-
-            <p className="text-gray-500">
-              Email
-            </p>
-
-            <h2 className="text-xl">
-              {user?.email}
-            </h2>
-
-          </div>
-
-          <div>
-
-            <p className="text-gray-500">
-              Role
-            </p>
-
-            <h2 className="text-xl">
-              {user?.role}
-            </h2>
-
-          </div>
+          <h2
+            className="
+              text-2xl
+              font-semibold
+            "
+          >
+            {profile.name}
+          </h2>
 
         </div>
+
+        <div>
+
+          <p className="text-gray-500">
+            Email
+          </p>
+
+          <h2
+            className="
+              text-xl
+            "
+          >
+            {profile.email}
+          </h2>
+
+        </div>
+
+        <div>
+
+          <p className="text-gray-500">
+            Role
+          </p>
+
+          <h2
+            className="
+              text-xl
+              font-medium
+            "
+          >
+            {profile.role}
+          </h2>
+
+        </div>
+
+        <button
+          onClick={() => {
+
+            localStorage.clear();
+
+            window.location.href =
+              "/login";
+          }}
+
+          className="
+            bg-black
+            text-white
+            px-6
+            py-3
+            rounded-xl
+          "
+        >
+          Logout
+        </button>
 
       </div>
 

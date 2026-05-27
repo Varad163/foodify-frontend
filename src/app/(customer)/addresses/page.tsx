@@ -1,26 +1,29 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import api from "@/lib/axios";
 
-export default function
-AddressesPage() {
+export default function AddressesPage() {
 
   const [addresses, setAddresses] =
     useState<any[]>([]);
 
-  const [address, setAddress] =
-    useState("");
-
   const [loading, setLoading] =
     useState(true);
 
+  const [form, setForm] =
+    useState({
+      fullName: "",
+      phone: "",
+      street: "",
+      city: "",
+      state: "",
+      pincode: "",
+    });
+
   // =========================
-  // FETCH
+  // FETCH ADDRESSES
   // =========================
 
   const fetchAddresses =
@@ -34,7 +37,7 @@ AddressesPage() {
           );
 
         setAddresses(
-          response.data.data || []
+          response.data || []
         );
 
       } catch (error) {
@@ -47,6 +50,12 @@ AddressesPage() {
       }
     };
 
+  useEffect(() => {
+
+    fetchAddresses();
+
+  }, []);
+
   // =========================
   // ADD ADDRESS
   // =========================
@@ -54,18 +63,21 @@ AddressesPage() {
   const addAddress =
     async () => {
 
-      if (!address) return;
-
       try {
 
         await api.post(
           "/address/add",
-          {
-            address,
-          }
+          form
         );
 
-        setAddress("");
+        setForm({
+          fullName: "",
+          phone: "",
+          street: "",
+          city: "",
+          state: "",
+          pincode: "",
+        });
 
         fetchAddresses();
 
@@ -80,9 +92,7 @@ AddressesPage() {
   // =========================
 
   const deleteAddress =
-    async (
-      id: number
-    ) => {
+    async (id: number) => {
 
       try {
 
@@ -98,11 +108,9 @@ AddressesPage() {
       }
     };
 
-  useEffect(() => {
-
-    fetchAddresses();
-
-  }, []);
+  // =========================
+  // LOADING
+  // =========================
 
   if (loading) {
 
@@ -136,120 +144,200 @@ AddressesPage() {
         Manage delivery addresses
       </p>
 
-      {/* ADD */}
+      {/* FORM */}
 
       <div
         className="
-          flex
+          grid
+          grid-cols-1
+          md:grid-cols-2
           gap-4
           mb-8
         "
       >
 
         <input
-
-          value={address}
-
+          type="text"
+          placeholder="Full Name"
+          value={form.fullName}
           onChange={(e) =>
-            setAddress(
-              e.target.value
-            )
+            setForm({
+              ...form,
+              fullName: e.target.value,
+            })
           }
-
-          placeholder="Enter address"
-
           className="
-            flex-1
             border
             rounded-xl
             p-3
           "
         />
 
-        <button
-
-          onClick={addAddress}
-
+        <input
+          type="text"
+          placeholder="Phone"
+          value={form.phone}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              phone: e.target.value,
+            })
+          }
           className="
-            bg-black
-            text-white
-            px-6
+            border
             rounded-xl
+            p-3
           "
-        >
+        />
 
-          Add
+        <input
+          type="text"
+          placeholder="Street"
+          value={form.street}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              street: e.target.value,
+            })
+          }
+          className="
+            border
+            rounded-xl
+            p-3
+          "
+        />
 
-        </button>
+        <input
+          type="text"
+          placeholder="City"
+          value={form.city}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              city: e.target.value,
+            })
+          }
+          className="
+            border
+            rounded-xl
+            p-3
+          "
+        />
+
+        <input
+          type="text"
+          placeholder="State"
+          value={form.state}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              state: e.target.value,
+            })
+          }
+          className="
+            border
+            rounded-xl
+            p-3
+          "
+        />
+
+        <input
+          type="text"
+          placeholder="Pincode"
+          value={form.pincode}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              pincode: e.target.value,
+            })
+          }
+          className="
+            border
+            rounded-xl
+            p-3
+          "
+        />
 
       </div>
 
-      {/* LIST */}
+      <button
+        onClick={addAddress}
+        className="
+          bg-black
+          text-white
+          px-6
+          py-3
+          rounded-xl
+          mb-10
+        "
+      >
+        Add Address
+      </button>
 
-      <div className="space-y-4">
+      {/* ADDRESS LIST */}
+
+      <div className="space-y-6">
 
         {addresses.length === 0 ? (
 
-          <p>
-            No addresses found
-          </p>
+          <p>No addresses found</p>
 
         ) : (
 
-          addresses.map(
-            (item) => (
+          addresses.map((address) => (
 
-              <div
+            <div
+              key={address.id}
+              className="
+                border
+                rounded-2xl
+                p-6
+              "
+            >
 
-                key={item.id}
-
+              <h2
                 className="
-                  border
-                  rounded-2xl
-                  p-6
-                  flex
-                  justify-between
-                  items-center
+                  text-xl
+                  font-bold
                 "
               >
+                {address.fullName}
+              </h2>
 
-                <div>
+              <p>{address.phone}</p>
 
-                  <h2
-                    className="
-                      text-xl
-                      font-semibold
-                    "
-                  >
-                    {item.address}
-                  </h2>
+              <p>
+                {address.street},
+                {" "}
+                {address.city}
+              </p>
 
-                </div>
+              <p>
+                {address.state}
+                {" - "}
+                {address.pincode}
+              </p>
 
-                <button
+              <button
+                onClick={() =>
+                  deleteAddress(
+                    address.id
+                  )
+                }
+                className="
+                  mt-4
+                  bg-red-500
+                  text-white
+                  px-4
+                  py-2
+                  rounded-lg
+                "
+              >
+                Delete
+              </button>
 
-                  onClick={() =>
-                    deleteAddress(
-                      item.id
-                    )
-                  }
-
-                  className="
-                    bg-red-500
-                    text-white
-                    px-4
-                    py-2
-                    rounded-xl
-                  "
-                >
-
-                  Delete
-
-                </button>
-
-              </div>
-            )
-          )
+            </div>
+          ))
         )}
 
       </div>
